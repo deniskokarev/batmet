@@ -1,20 +1,19 @@
 #THIS FILE IS AUTO GENERATED FROM THE TEMPLATE! DO NOT CHANGE!
+
+set(ARM_GCC "/Applications/ARM/bin/")
+
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_VERSION 1)
 cmake_minimum_required(VERSION 3.23)
 
-set(ARM_GCC "/Applications/ARM/")
-set(CUBE_MX_REPO "/Users/dkv/STM32Cube/Repository")
-
-
 # specify cross-compilers and tools
-set(CMAKE_C_COMPILER "${ARM_GCC}/bin/arm-none-eabi-gcc")
-set(CMAKE_CXX_COMPILER "${ARM_GCC}/bin/arm-none-eabi-g++")
-set(CMAKE_ASM_COMPILER  "${ARM_GCC}/bin/arm-none-eabi-gcc")
-set(CMAKE_AR "${ARM_GCC}/bin/arm-none-eabi-ar")
-set(CMAKE_OBJCOPY "${ARM_GCC}/bin/arm-none-eabi-objcopy")
-set(CMAKE_OBJDUMP "${ARM_GCC}/bin/arm-none-eabi-objdump")
-set(SIZE "${ARM_GCC}/bin/arm-none-eabi-size")
+set(CMAKE_C_COMPILER "${ARM_GCC}arm-none-eabi-gcc")
+set(CMAKE_CXX_COMPILER "${ARM_GCC}arm-none-eabi-g++")
+set(CMAKE_ASM_COMPILER  "${ARM_GCC}arm-none-eabi-gcc")
+set(CMAKE_AR "${ARM_GCC}arm-none-eabi-ar")
+set(CMAKE_OBJCOPY "${ARM_GCC}arm-none-eabi-objcopy")
+set(CMAKE_OBJDUMP "${ARM_GCC}arm-none-eabi-objdump")
+set(SIZE "${ARM_GCC}arm-none-eabi-size")
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
 # project settings
@@ -23,9 +22,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 11)
 
 #Uncomment for hardware floating point
-#add_compile_definitions(ARM_MATH_CM4;ARM_MATH_MATRIX_CHECK;ARM_MATH_ROUNDING)
-#add_compile_options(-mfloat-abi=hard -mfpu=fpv4-sp-d16)
-#add_link_options(-mfloat-abi=hard -mfpu=fpv4-sp-d16)
+add_compile_definitions(ARM_MATH_CM4;ARM_MATH_MATRIX_CHECK;ARM_MATH_ROUNDING)
+add_compile_options(-mfloat-abi=hard -mfpu=fpv4-sp-d16)
+add_link_options(-mfloat-abi=hard -mfpu=fpv4-sp-d16)
 
 #Uncomment for software floating point
 #add_compile_options(-mfloat-abi=soft)
@@ -53,7 +52,8 @@ else ()
     add_compile_options(-Og -g)
 endif ()
 
-include_directories(Inc "${CUBE_MX_REPO}/STM32Cube_FW_F3_V1.11.3/Drivers/STM32F3xx_HAL_Driver/Inc" "${CUBE_MX_REPO}/STM32Cube_FW_F3_V1.11.3/Drivers/STM32F3xx_HAL_Driver/Inc/Legacy" "${CUBE_MX_REPO}/STM32Cube_FW_F3_V1.11.3/Drivers/CMSIS/Device/ST/STM32F3xx/Include" "${CUBE_MX_REPO}/STM32Cube_FW_F3_V1.11.3/Drivers/CMSIS/Include")
+# reasonably limiting includes to avoid external deps
+include_directories(Inc Drivers/CMSIS/Include Drivers/STM32F3xx_HAL_Driver/Inc Drivers/CMSIS/Device/ST/STM32F3xx/Include)
 
 add_definitions(-DDEBUG -DUSE_HAL_DRIVER -DSTM32F334x8)
 
