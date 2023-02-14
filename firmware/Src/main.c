@@ -17,7 +17,6 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-#include <stdio.h>
 #include "main.h"
 #include "adc.h"
 #include "dac.h"
@@ -29,7 +28,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -102,14 +101,22 @@ int main(void)
   /* USER CODE END 2 */
 
   /* Infinite loop */
-	/* USER CODE BEGIN WHILE */
+  /* USER CODE BEGIN WHILE */
+	int phase = 1;
+	int cycle = 0;
 	while (1) {
-		/* USER CODE END WHILE */
-		printf("Hello World\n\r");
-		HAL_Delay(1000);
-		/* USER CODE BEGIN 3 */
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+		printf("Hello World, %d\n\r", cycle);
+		HAL_DAC_Start(&hdac1, DAC1_CHANNEL_1);
+		HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, ((1<<12)-1) * phase);
+		phase = !phase;
+		HAL_Delay(5000);
+		HAL_DAC_Stop(&hdac1, DAC1_CHANNEL_1);
+		cycle++;
 	}
-	/* USER CODE END 3 */
+  /* USER CODE END 3 */
 }
 
 /**
