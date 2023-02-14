@@ -102,18 +102,19 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	int phase = 1;
+	int phase = 1; // start hi
 	int cycle = 0;
 	while (1) {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
 		printf("Hello World, %d\n\r", cycle);
-		HAL_DAC_Start(&hdac1, DAC1_CHANNEL_1);
+		// need to set first, then start
+		// fyi, observed voltages are [0.0601 .. 3.2645]
 		HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, ((1<<12)-1) * phase);
+		HAL_DAC_Start(&hdac1, DAC1_CHANNEL_1);
 		phase = !phase;
 		HAL_Delay(5000);
-		HAL_DAC_Stop(&hdac1, DAC1_CHANNEL_1);
 		cycle++;
 	}
   /* USER CODE END 3 */
