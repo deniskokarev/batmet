@@ -6,7 +6,7 @@ toolchain:
   - zephyr
   - gnuarmemb
   - xtools
-ram: 40
+ram: 12
 supported:
   - gpio
   - i2c

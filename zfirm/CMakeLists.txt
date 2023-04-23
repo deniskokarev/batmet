@@ -6,6 +6,6 @@ set(BOARD_ROOT ${CMAKE_CURRENT_LIST_DIR})
 set(BOARD stm32f3_batmet)
 
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
-project(out_of_tree_board)
+project(batmet)
 
 target_sources(app PRIVATE src/main.c)
