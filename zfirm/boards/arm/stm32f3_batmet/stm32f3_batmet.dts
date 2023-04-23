@@ -1,0 +1,150 @@
+/dts-v1/;
+#include <mem.h>
+#include <st/f3/stm32f334.dtsi>
+#include "stm32f334k(4-6-8)tx-pinctrl.dtsi"
+
+/ {
+	model = "Denis Kokarev Battery meter board";
+	compatible = "st,stm32f3_batmet";
+
+	ccm0: memory@10000000 {
+		compatible = "zephyr,memory-region", "st,stm32-ccm";
+		reg = <0x10000000 DT_SIZE_K(4)>;
+		zephyr,memory-region = "CCM";
+	};
+
+	sram0: memory@20000000 {
+		reg = <0x20000000 DT_SIZE_K(12)>;
+	};
+
+	soc {
+		flash-controller@40022000 {
+			flash0: flash@8000000 {
+				reg = <0x08000000 DT_SIZE_K(64)>;
+			};
+		};
+	};
+	
+	chosen {
+		zephyr,console = &usart1;
+		zephyr,shell-uart = &usart1;
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+		zephyr,ccm = &ccm0;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		red_led: led_1 {
+			gpios = <&gpiob 5 GPIO_ACTIVE_HIGH>;
+			label = "LED Red";
+		};
+		green_led: led_2 {
+			gpios = <&gpiob 4 GPIO_ACTIVE_HIGH>;
+			label = "LED Red";
+		};
+	};
+
+	gpio_keys {
+		compatible = "gpio-keys";
+	};
+
+	aliases {
+		ledr = &red_led;
+		ledg = &green_led;
+		watchdog0 = &iwdg;
+	};
+};
+
+&clk_lsi {
+	status = "okay";
+};
+
+&clk_hsi {
+	clock-frequency = <DT_FREQ_M(8)>;
+	status = "okay";
+};
+
+&pll {
+	prediv = <2>;
+	mul = <9>;
+	clocks = <&clk_hsi>;
+	status = "okay";
+};
+
+&rcc {
+	clocks = <&pll>;
+	clock-frequency = <DT_FREQ_M(72)>;
+	ahb-prescaler = <1>;
+	apb1-prescaler = <4>;
+	apb2-prescaler = <4>;
+};
+
+&usart1 {
+	pinctrl-0 = <&usart1_tx_pa9 &usart1_rx_pa10>;
+	pinctrl-names = "default";
+	current-speed = <38400>;
+	status = "okay";
+};
+
+&i2c1 {
+	pinctrl-0 = <&i2c1_scl_pb6 &i2c1_sda_pb7>;
+	pinctrl-names = "default";
+	status = "okay";
+	clock-frequency = <I2C_BITRATE_FAST>;
+};
+
+&rtc {
+	clocks = <&rcc STM32_CLOCK_BUS_APB1 0x10000000>,
+		 <&rcc STM32_SRC_LSI RTC_SEL(2)>;
+	status = "okay";
+};
+
+&flash0 {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		/* Set 1Kb of storage at the end of the 64Kb of flash */
+		storage_partition: partition@100000 {
+			label = "storage";
+			reg = <0x000100000 DT_SIZE_K(1)>;
+		};
+	};
+};
+
+&iwdg {
+	status = "okay";
+};
+
+&timers1 {
+	st,prescaler = <10000>;
+	status = "okay";
+	pwm1: pwm {
+		status = "okay";
+		pinctrl-0 = <&tim1_ch1_pa8>;
+		pinctrl-names = "default";
+	};
+};
+
+&adc1 {
+	pinctrl-0 = <&adc1_in1_pa0>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+&die_temp {
+	status = "okay";
+};
+
+&dac1 {
+	status = "okay";
+	/* dac output pins(pa4,pa5,pa6) might conflict with spi1 pins */
+	pinctrl-0 = <&dac1_out1_pa4>;
+	pinctrl-names = "default";
+};
+
+&dma1 {
+	status = "okay";
+};
