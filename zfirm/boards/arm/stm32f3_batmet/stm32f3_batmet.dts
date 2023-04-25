@@ -74,10 +74,10 @@
 
 &rcc {
 	clocks = <&pll>;
-	clock-frequency = <DT_FREQ_M(72)>;
+	clock-frequency = <DT_FREQ_M(36)>;
 	ahb-prescaler = <1>;
-	apb1-prescaler = <4>;
-	apb2-prescaler = <4>;
+	apb1-prescaler = <1>; // may not be /2, otherwise uart is reduced twice
+	apb2-prescaler = <1>;
 };
 
 &usart1 {
