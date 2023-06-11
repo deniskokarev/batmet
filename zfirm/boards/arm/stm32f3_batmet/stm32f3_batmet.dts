@@ -7,6 +7,12 @@
 	model = "Denis Kokarev Battery meter board";
 	compatible = "st,stm32f3_batmet";
 
+	zephyr,user {
+		dac = <&dac1>;
+		dac-channel-id = <1>;
+		dac-resolution = <12>;
+	};
+
 	ccm0: memory@10000000 {
 		compatible = "zephyr,memory-region", "st,stm32-ccm";
 		reg = <0x10000000 DT_SIZE_K(4)>;
