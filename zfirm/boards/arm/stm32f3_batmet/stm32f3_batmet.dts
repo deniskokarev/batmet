@@ -34,13 +34,15 @@
 	};
 
 	leds {
+		// wtf, something is wrong with gpios
+		// in order to make active high have to set it low???
 		compatible = "gpio-leds";
 		red_led: led_1 {
-			gpios = <&gpiob 5 GPIO_ACTIVE_HIGH>;
+			gpios = <&gpiob 5 GPIO_ACTIVE_LOW>;
 			label = "LED Red";
 		};
 		green_led: led_2 {
-			gpios = <&gpiob 4 GPIO_ACTIVE_HIGH>;
+			gpios = <&gpiob 4 GPIO_ACTIVE_LOW>;
 			label = "LED Green";
 		};
 	};
