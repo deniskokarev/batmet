@@ -41,7 +41,7 @@
 		};
 		green_led: led_2 {
 			gpios = <&gpiob 4 GPIO_ACTIVE_HIGH>;
-			label = "LED Red";
+			label = "LED Green";
 		};
 	};
 
