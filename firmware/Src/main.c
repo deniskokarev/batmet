@@ -104,10 +104,14 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 	int phase = 1; // start hi
 	int cycle = 0;
+	int led_state = 1;
 	while (1) {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+		HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, led_state);
+		HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, !led_state);
+		led_state = !led_state;
 		printf("Hello World, %d\n\r", cycle);
 		// need to set first, then start
 		// fyi, observed voltages are [0.0601 .. 3.2645]
