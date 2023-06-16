@@ -1,4 +1,3 @@
 config BOARD_STM32F3_BATMET
 	bool "STM32F3BATMET Development Board"
 	depends on CONFIG_SOC_SERIES_STM32F3X
-	#select USE_STM32_HAL_OPAMP

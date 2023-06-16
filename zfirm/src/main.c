@@ -2,6 +2,8 @@
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/drivers/dac.h>
+#include "opamp.h"
+
 
 #define ZEPHYR_USER_NODE DT_PATH(zephyr_user)
 
@@ -30,7 +32,13 @@ static const struct dac_channel_cfg dac_ch_cfg = {
 		.resolution  = DAC_RESOLUTION
 };
 
+void Error_Handler() {
+	LOG_ERR("opamp initialization error");
+}
+
 int main(void) {
+	MX_OPAMP2_Init();
+
 	if (!gpio_is_ready_dt(&red_led) || !gpio_is_ready_dt(&green_led)) {
 		LOG_ERR("gpio_is_ready_dt() error");
 		return -1;
