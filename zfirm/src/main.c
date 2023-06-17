@@ -37,8 +37,6 @@ void Error_Handler() {
 }
 
 int main(void) {
-	MX_OPAMP2_Init();
-
 	if (!gpio_is_ready_dt(&red_led) || !gpio_is_ready_dt(&green_led)) {
 		LOG_ERR("gpio_is_ready_dt() error");
 		return -1;
@@ -62,6 +60,15 @@ int main(void) {
 
 	int dac_phase = 1; // start hi
 	const int dac_range = 1U << DAC_RESOLUTION;
+
+	MX_OPAMP2_Init();
+	rc = HAL_OPAMP_Start(&hopamp2);
+	if (rc != HAL_OK) {
+		LOG_ERR("opamp start error: %d", rc);
+		gpio_pin_set_dt(&red_led, 1);
+		gpio_pin_set_dt(&green_led, 1);
+		return -1;
+	}
 
 	int led_state = 0; // start with green
 	while (1) {
