@@ -11,6 +11,7 @@
 		dac = <&dac1>;
 		dac-channel-id = <1>;
 		dac-resolution = <12>;
+		io-channels = <&adc1 1 &adc1 2 &adc1 3>;
 	};
 
 	ccm0: memory@10000000 {
@@ -139,8 +140,32 @@
 };
 
 &adc1 {
-	pinctrl-0 = <&adc1_in1_pa0>;
+	#address-cells = <1>;
+	#size-cells = <0>;
+	pinctrl-0 = <&adc1_in1_pa0 &adc1_in2_pa1 &adc1_in3_pa2>;
 	pinctrl-names = "default";
+
+	channel@1 {
+		reg = <1>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <12>;
+	};
+	channel@2 {
+		reg = <2>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <12>;
+	};
+	channel@3 {
+		reg = <3>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <12>;
+	};
 	status = "okay";
 };
 

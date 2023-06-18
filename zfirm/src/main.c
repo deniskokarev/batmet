@@ -39,6 +39,10 @@ void Error_Handler() {
 }
 
 int main(void) {
+	// assuming an error
+	gpio_pin_set_dt(&red_led, 1);
+	gpio_pin_set_dt(&green_led, 1);
+
 	if (!gpio_is_ready_dt(&red_led) || !gpio_is_ready_dt(&green_led)) {
 		LOG_ERR("gpio_is_ready_dt() error");
 		return -1;
@@ -67,22 +71,26 @@ int main(void) {
 	rc = HAL_OPAMP_Start(&hopamp2);
 	if (rc != HAL_OK) {
 		LOG_ERR("opamp start error: %d", rc);
-		gpio_pin_set_dt(&red_led, 1);
-		gpio_pin_set_dt(&green_led, 1);
-		return -1;
+		return -5;
+	}
+
+	rc = adc_init();
+	if (rc) {
+		LOG_ERR("ADC init error: %d", rc);
+		return -6;
 	}
 
 	int led_state = 0; // start with green
 	while (1) {
-		LOG_INF("Hello World! %s", CONFIG_ARCH);
 		gpio_pin_set_dt(&red_led, led_state);
 		gpio_pin_set_dt(&green_led, !led_state);
 		led_state = !led_state;
 		rc = dac_write_value(dac_dev, DAC_CHANNEL_ID, (dac_range-1) * dac_phase);
 		if (rc != 0) {
 			LOG_ERR("dac_write_value() failed with code %d", rc);
-			return -5;
+			return -7;
 		}
+		adc_do_sample();
 		dac_phase = !dac_phase;
 		k_sleep(K_MSEC(5000));
 	}

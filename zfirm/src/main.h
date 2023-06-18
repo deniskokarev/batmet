@@ -15,4 +15,8 @@ LOG_MODULE_DECLARE(batmet, LOG_LEVEL_DBG);
 // CubeMX-compatible error handler
 void Error_Handler();
 
+int adc_init();
+
+void adc_do_sample();
+
 #endif //BATMET_MAIN_H
