@@ -2,8 +2,11 @@
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/drivers/dac.h>
+#define LOG_REGISTERED
+#include "main.h"
 #include "opamp.h"
 
+LOG_MODULE_REGISTER(batmet, LOG_LEVEL_DBG);
 
 #define ZEPHYR_USER_NODE DT_PATH(zephyr_user)
 
@@ -20,7 +23,6 @@
 #define DAC_RESOLUTION 0
 #endif
 
-LOG_MODULE_REGISTER(batmet, LOG_LEVEL_DBG);
 
 static const struct gpio_dt_spec red_led = GPIO_DT_SPEC_GET(DT_ALIAS(ledr), gpios);
 static const struct gpio_dt_spec green_led = GPIO_DT_SPEC_GET(DT_ALIAS(ledg), gpios);
