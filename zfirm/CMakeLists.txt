@@ -8,4 +8,12 @@ set(BOARD stm32f3_batmet)
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(batmet)
 
-target_sources(app PRIVATE src/main.c src/opamp.c src/cli.c src/adc.c)
+# common src
+set(SRC src/main.c src/opamp.c src/adc.c)
+
+if (CONFIG_SHELL)
+    # if shell is enabled adding our commands
+    list(APPEND SRC src/cli.c)
+endif()
+
+target_sources(app PRIVATE ${SRC})
