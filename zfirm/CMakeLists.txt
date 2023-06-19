@@ -9,7 +9,7 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(batmet)
 
 # common src
-set(SRC src/main.c src/opamp.c src/adc.c)
+set(SRC src/main.c src/opamp.c src/adc.c src/dac.c)
 
 if (CONFIG_SHELL)
     # if shell is enabled adding our commands

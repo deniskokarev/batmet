@@ -19,4 +19,23 @@ int adc_init();
 
 void adc_do_sample();
 
+extern int run_dac_cycle;
+
+void dac_do_run_cycle(int *dac_phase);
+
+int dac_do_init();
+
+int dac_set_d(int d);
+
+int dac_set_v(float v);
+
+typedef enum {
+	DAC_OK = 0,
+	DAC_ERR_RANGE,
+	DAC_ERR_LOW,
+	DAC_ERR_HIGH,
+} dac_err_t;
+
+const char *dac_err_str(dac_err_t err);
+
 #endif //BATMET_MAIN_H
