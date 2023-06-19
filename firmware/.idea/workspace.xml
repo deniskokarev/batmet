@@ -17,7 +17,15 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91500cc9-b860-4a68-88ca-fc1cfdd781f9" name="Changes" comment="" />
+    <list default="true" id="91500cc9-b860-4a68-88ca-fc1cfdd781f9" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/OCD_firmware.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/runConfigurations/OCD_firmware.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Src/opamp.c" beforeDir="false" afterPath="$PROJECT_DIR$/Src/opamp.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/firmware.ioc" beforeDir="false" afterPath="$PROJECT_DIR$/firmware.ioc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../hard/batmet.asc" beforeDir="false" afterPath="$PROJECT_DIR$/../hard/batmet.asc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../zfirm/boards/arm/stm32f3_batmet/Kconfig.defconfig" beforeDir="false" afterPath="$PROJECT_DIR$/../zfirm/boards/arm/stm32f3_batmet/Kconfig.defconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../zfirm/prj.conf" beforeDir="false" afterPath="$PROJECT_DIR$/../zfirm/prj.conf" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -26,6 +34,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug-arm-none-eabi" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
@@ -43,17 +52,17 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "last_opened_file_path": "/Users/dkv/work/arm/batmet/firmware/firmware.ioc"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/dkv/work/arm/batmet/firmware/firmware.ioc&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="OpenOCD Download &amp; Run.OCD firmware">
     <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
@@ -81,10 +90,28 @@
       <workItem from="1671908056682" duration="57000" />
       <workItem from="1671908174330" duration="38000" />
       <workItem from="1671908240555" duration="7030000" />
+      <workItem from="1672970831179" duration="10000" />
+      <workItem from="1676253198210" duration="8019000" />
+      <workItem from="1681937903872" duration="178000" />
+      <workItem from="1681938439176" duration="530000" />
+      <workItem from="1682172023861" duration="140000" />
+      <workItem from="1682172177450" duration="20000" />
+      <workItem from="1686445032112" duration="13066000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/Src/main.c</url>
+          <line>127</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
