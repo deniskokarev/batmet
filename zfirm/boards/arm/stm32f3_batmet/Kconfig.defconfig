@@ -7,13 +7,3 @@ if HAS_STM32CUBE
         default y
 
 endif # HAS_STM32CUBE
-
-#
-# we ran out of RAM, but can spare few hundred bytes
-# by reducing SHELL stack size from 2k->1.5k and workq from 1k ->0.5k
-#
-config SHELL_STACK_SIZE
-    default 1536
-
-config SYSTEM_WORKQUEUE_STACK_SIZE
-    default 512
