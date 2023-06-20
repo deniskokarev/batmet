@@ -117,10 +117,19 @@
 		#address-cells = <1>;
 		#size-cells = <1>;
 
-		/* Set 1Kb of storage at the end of the 64Kb of flash */
-		storage_partition: partition@fc00 {
+		// we're not using mcuboot, so boot partition doesn't matter, but
+		// NB!!! If using NVS, the image size must not exceed 58k
+		// If NVS is not used, the partition map doesn't matter, all 64k
+		// may be used as code
+		boot_partition: partition@0 {
+			reg = <0x0 DT_SIZE_K(58)>;
+			read-only;
+		};
+
+		// Set 2k * 3 sectors of storage at the end of the 64Kb of flash
+		storage_partition: partition@e800 {
 			label = "storage";
-			reg = <0x0000fc00 DT_SIZE_K(1)>;
+			reg = <0xe800 DT_SIZE_K(6)>;
 		};
 	};
 };
