@@ -1,6 +1,7 @@
 #include <zephyr/kernel.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/settings/settings.h>
 
 #define LOG_REGISTERED
 
@@ -48,6 +49,13 @@ int main(void) {
 		LOG_ERR("ADC init error: %d", rc);
 		return -6;
 	}
+
+	rc = settings_subsys_init();
+	if (rc) {
+		LOG_ERR("settings subsys initialization: fail (err %d)", rc);
+		return -7;
+	}
+	LOG_INF("settings subsys initialization: OK");
 
 	int led_state = 0; // start with green
 	while (1) {
