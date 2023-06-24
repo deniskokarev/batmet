@@ -38,4 +38,18 @@ typedef enum {
 
 const char *dac_err_str(dac_err_t err);
 
+typedef enum {
+	LED_GREEN = 0,
+	LED_RED,
+	LED_SZ
+} led_t;
+
+int led_init();
+
+#define LED_MAX ((uint8_t)255)
+#define LED_HALF ((uint8_t)127)
+#define LED_OFF ((uint8_t)0)
+
+void led_set(led_t led, uint8_t duty);
+
 #endif //BATMET_MAIN_H

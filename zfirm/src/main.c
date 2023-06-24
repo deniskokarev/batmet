@@ -1,5 +1,4 @@
 #include <zephyr/kernel.h>
-#include <zephyr/drivers/gpio.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/settings/settings.h>
 
@@ -10,29 +9,19 @@
 
 LOG_MODULE_REGISTER(batmet, LOG_LEVEL_DBG);
 
-static const struct gpio_dt_spec red_led = GPIO_DT_SPEC_GET(DT_ALIAS(ledr), gpios);
-static const struct gpio_dt_spec green_led = GPIO_DT_SPEC_GET(DT_ALIAS(ledg), gpios);
-
 void Error_Handler() {
 	LOG_ERR("opamp initialization error");
 }
 
 int main(void) {
-	// assuming an error
-	gpio_pin_set_dt(&red_led, 1);
-	gpio_pin_set_dt(&green_led, 1);
-
-	if (!gpio_is_ready_dt(&red_led) || !gpio_is_ready_dt(&green_led)) {
-		LOG_ERR("gpio_is_ready_dt() error");
-		return -1;
+	int rc = led_init();
+	if (rc) {
+		return rc;
 	}
-	if (gpio_pin_configure_dt(&red_led, GPIO_OUTPUT_ACTIVE) < 0 ||
-	    gpio_pin_configure_dt(&green_led, GPIO_OUTPUT_ACTIVE) < 0) {
-		LOG_ERR("gpio_pin_configure_dt() error");
-		return -2;
-	}
+	led_set(LED_GREEN, LED_OFF);
+	led_set(LED_RED, LED_MAX);
 
-	int rc = dac_do_init();
+	rc = dac_do_init();
 	if (rc) {
 		return rc;
 	}
@@ -57,18 +46,24 @@ int main(void) {
 	}
 	LOG_INF("settings subsys initialization: OK");
 
-	int led_state = 0; // start with green
+	led_set(LED_RED, LED_OFF);
+	int led = LED_GREEN; // start with green
+	int t = 0;
+	int glow = LED_MAX * ((t % 8) + 1) / 8;
+	led_set(led, glow);
 	while (1) {
 		int dac_phase = 1; // start hi
-		gpio_pin_set_dt(&red_led, led_state);
-		gpio_pin_set_dt(&green_led, !led_state);
-		led_state = !led_state;
 		adc_do_sample();
 		if (run_dac_cycle) {
 			dac_do_run_cycle(&dac_phase);
 		} else {
 			k_sleep(K_MSEC(5000));
 		}
+		led_set(led, 0);
+		led = (led + 1) % LED_SZ;
+		t++;
+		glow = LED_MAX * ((t / 2) % 8 + 1) / 8;
+		led_set(led, glow);
 	}
 	return 0;
 }
