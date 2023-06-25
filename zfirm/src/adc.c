@@ -43,7 +43,7 @@ void adc_do_sample() {
 			/* buffer size in bytes, not number of samples */
 			.buffer_size = sizeof(buf),
 	};
-	LOG_INF("ADC reading:");
+	LOG_DBG("ADC reading:");
 	for (size_t i = 0U; i < ARRAY_SIZE(adc_channels); i++) {
 		(void) adc_sequence_init_dt(&adc_channels[i], &sequence);
 		int err = adc_read(adc_channels[i].dev, &sequence);
@@ -53,7 +53,7 @@ void adc_do_sample() {
 			        adc_channels[i].channel_id,
 			        err);
 		} else {
-			LOG_INF("- %s, channel %d: %"PRId16,
+			LOG_DBG("- %s, channel %d: %"PRId16,
 			        adc_channels[i].dev->name,
 			        adc_channels[i].channel_id,
 			        buf);

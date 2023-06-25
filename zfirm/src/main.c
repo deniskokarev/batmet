@@ -47,10 +47,7 @@ int main(void) {
 	LOG_INF("settings subsys initialization: OK");
 
 	led_set(LED_RED, LED_OFF);
-	int led = LED_GREEN; // start with green
-	int t = 0;
-	int glow = LED_MAX * ((t % 8) + 1) / 8;
-	led_set(led, glow);
+	led_flow(LED_GREEN, LED_FLOW_FAST);
 	while (1) {
 		int dac_phase = 1; // start hi
 		adc_do_sample();
@@ -59,11 +56,6 @@ int main(void) {
 		} else {
 			k_sleep(K_MSEC(5000));
 		}
-		led_set(led, 0);
-		led = (led + 1) % LED_SZ;
-		t++;
-		glow = LED_MAX * ((t / 2) % 8 + 1) / 8;
-		led_set(led, glow);
 	}
 	return 0;
 }
