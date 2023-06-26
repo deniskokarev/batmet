@@ -1,7 +1,9 @@
 #include <zephyr/drivers/pwm.h>
 #include <zephyr/kernel.h>
-#include <math.h>
 #include "main.h"
+
+#define M_PI        3.14159265358979323846
+#define M_PI_2      1.57079632679489661923
 
 // base blinking period
 #define PERIOD (PWM_SEC(1U) / 256)

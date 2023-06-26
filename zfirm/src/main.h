@@ -15,6 +15,14 @@ LOG_MODULE_DECLARE(batmet, LOG_LEVEL_INF);
 // CubeMX-compatible error handler
 void Error_Handler();
 
+/**
+ * convert string to float
+ * @param res resulting floating number
+ * @param str src string
+ * @return 0 on success of -EINVAL on err
+ */
+int my_strtof(float *res, const char *str);
+
 int adc_init();
 
 void adc_do_sample();
@@ -49,6 +57,7 @@ typedef enum {
 #define LED_MAX ((uint8_t)255)
 #define LED_HALF ((uint8_t)127)
 #define LED_OFF ((uint8_t)0)
+#define LED_ON  LED_MAX
 
 #define LED_FLOW_SLOW (1.0/3)
 #define LED_FLOW_NORMAL 1.0

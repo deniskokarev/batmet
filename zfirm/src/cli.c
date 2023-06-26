@@ -18,27 +18,14 @@ static int cmd_d(const struct shell *sh, size_t argc, char **argv) {
 }
 
 static int cmd_v(const struct shell *sh, size_t argc, char **argv) {
-	char *s;
-	long hi = strtol(argv[1], &s, 10);
-	long lo = 0;
-	int df = 1;
-	if (*s == '.') {
-		s++;
-		char *sf;
-		lo = strtol(s, &sf, 10);
-		int l = sf - s;
-		s = sf;
-		while (l--) {
-			df *= 10;
-		}
-	}
-	if (*s != 0) {
-		shell_error(sh, "the voltage should be a number");
+	float v;
+	int rc = my_strtof(&v, argv[1]);
+	if (rc || v < 0) {
+		shell_error(sh, "the voltage should be a positive number");
 		return -EINVAL;
 	}
-	double v = hi + ((double) lo) / df;
-	shell_print(sh, "setting voltage %d.%03d", (int) v, (int) ((v - (int) v) * 1000));
-	int rc = dac_set_v(v);
+	shell_print(sh, "setting voltage %f", v);
+	rc = dac_set_v(v);
 	if (rc) {
 		shell_error(sh, "could not set voltage with error: %d", rc);
 	}
