@@ -17,7 +17,7 @@ def objective(x, a, b, c):
     return a * x * x + b * x + c
 
 
-def fit(x: ArrayLike, y: ArrayLike) -> None:
+def fit_v2dac(x: ArrayLike, y: ArrayLike) -> None:
     """
     :param x: Desired Voltage
     :param y: DAC value to get it
@@ -32,9 +32,28 @@ def fit(x: ArrayLike, y: ArrayLike) -> None:
     # calculate the output for the range
     y_line = objective(x_line, a, b, c)
     # create a line plot for the mapping function
-    pyplot.plot(x_line, y_line, '--', color='red')
+    pyplot.plot(x_line, y_line, '--', color='blue')
+    pyplot.scatter(x, y, color='blue')
+    pyplot.show()
 
-    pyplot.scatter(x, y)
+
+def fit_adc2v(x: ArrayLike, y: ArrayLike) -> None:
+    """
+    :param x: ADC value
+    :param y: True voltage
+    Print the target function and domain
+    """
+    (a, b, c), _ = curve_fit(objective, x, y)
+
+    print(f"static int adc2v(float adc) {{ return {a} * adc * adc + {b} * adc + {c}; }}")
+    # define a sequence of inputs between the smallest and largest known inputs
+
+    x_line = np.arange(min(x), max(x), .01)
+    # calculate the output for the range
+    y_line = objective(x_line, a, b, c)
+    # create a line plot for the mapping function
+    pyplot.plot(x_line, y_line, '--', color='red')
+    pyplot.scatter(x, y, color='red')
     pyplot.show()
 
 
@@ -47,9 +66,11 @@ def main() -> int:
     args = parser.parse_args()
     try:
         with open(args.csv, encoding="utf-8") as f:
-            mat = np.loadtxt(f, delimiter="\t", skiprows=0, usecols=(0, 3))
+            mat = np.loadtxt(f, delimiter="\t", skiprows=0, usecols=(0, 3, 4))
             dac, vsens = mat[:, 0], mat[:, 1]
-            fit(vsens, dac)
+            fit_v2dac(vsens, dac)
+            adc = mat[:, 2]
+            fit_adc2v(adc, vsens)
     except IOError as ex:
         logging.error(f"Cannot open {args.csv}")
         return -1

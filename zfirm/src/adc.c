@@ -39,8 +39,8 @@ static struct adc_sequence sequence[NCHAN] = {
 
 static const char *adc_chan_name[NCHAN] = {
 		"EXT",
-		"LOAD",
-		"CUR"
+		"PSUPPLY",
+		"SENS"
 };
 
 int adc_init() {
@@ -66,6 +66,10 @@ int adc_init() {
 	return 0;
 }
 
+static float adc2v(float adc) {
+	return 3.197713845068536e-10 * adc * adc + 0.0008332518627677381 * adc + -0.09870571280531593;
+}
+
 void adc_do_sample() {
 	for (size_t i = 0U; i < ARRAY_SIZE(adc_channels); i++) {
 		int err = adc_read(adc_channels[i].dev, &sequence[i]);
@@ -75,11 +79,13 @@ void adc_do_sample() {
 			        adc_channels[i].channel_id,
 			        err);
 		} else {
-			printk("- %s, channel %d (%s): %"PRId16"\n",
+			printk("- %s, channel %d (%s): %"PRId16" (%.3f) V\n",
 			       adc_channels[i].dev->name,
 			       adc_channels[i].channel_id,
 			       adc_chan_name[i],
-			       buf[i]);
+			       buf[i],
+				   adc2v(buf[i])
+			);
 		}
 	}
 }

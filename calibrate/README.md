@@ -10,6 +10,8 @@ pip install matplotlib scipy
 
 Process tab-delimited calibration file, where column 1 contains DAC values and column 4 desired voltage
 
+Column 5 contains ADC sensing value
+
 ```
 ./main.py --csv calibration.csv
 ```

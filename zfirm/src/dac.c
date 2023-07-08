@@ -56,13 +56,14 @@ int dac_do_init() {
 	return 0;
 }
 
-static const float MIN_V = 0.0033;
-static const float MAX_V = 1.5375;
-static const int MIN_D = 250;
-static const int MAX_D = 3900;
+static const float v2dac_min_v = 0;
+static const float v2dac_max_v = 1.55;
+static const float v2dac_a = -1.9936000146392046;
+static const float v2dac_b = 2375.2877887895047;
+static const float v2dac_c = 244.66981905981123;
 
 const char *dac_err_str(dac_err_t err) {
-	return "supported voltages between 0.0033 and 1.5375";
+	return "unsupported voltage range";
 }
 
 /**
@@ -71,13 +72,13 @@ const char *dac_err_str(dac_err_t err) {
  * @return 0 if no error
  */
 static int v2dac(int *dac, float v) {
-	if (v < MIN_V) {
+	if (v < v2dac_min_v) {
 		return DAC_ERR_LOW;
-	} else if (v > MAX_V) {
+	} else if (v > v2dac_max_v) {
 		return DAC_ERR_HIGH;
 	} else {
-		v -= MIN_V;
-		*dac = MIN_D + v * (MAX_D - MIN_D) / (MAX_V - MIN_V);
+		float d = v2dac_a * v * v + v2dac_b * v + v2dac_c;
+		*dac = (int) (d + 0.5);
 		return DAC_OK;
 	}
 }
