@@ -52,6 +52,8 @@ int my_strtof(float *res, const char *str) {
 static void cmd_help(int argc, char **argv) {
 	printk("Supported commands:\n"
 	       "\tv <voltage> - set desired output voltage\n"
+	       "\td <dac_value> - set dac output value [0..4095]\n"
+	       "\ta - sample ADC channels\n"
 	);
 }
 
@@ -79,6 +81,34 @@ static void cmd_v(int argc, char *argv[]) {
 	}
 }
 
+static void cmd_d(int argc, char *argv[]) {
+	if (argc < 2) {
+		printk("expecting only one argument - dac [0..4095]\n");
+	}
+	char *endp;
+	int d = strtol(argv[1], &endp, 10);
+	if (d < 0 || d > 4095 || !(*endp == '\r' || *endp == '\n' || *endp == '\t' || *endp == ' ' || *endp == 0)) {
+		printk("DAC value must be a number [0..4095]\n");
+	} else {
+		int rc = dac_set_d(d);
+		if (rc) {
+			printk("could not set DAC value, error: %d\n", rc);
+		} else {
+			if (d > 0) {
+				printk("DAC = %d\n", d);
+				led_flow(LED_GREEN, LED_FLOW_NORMAL);
+			} else {
+				printk("DAC = off\n");
+				led_set(LED_GREEN, LED_ON);
+			}
+		}
+	}
+}
+
+static void cmd_a(int argc, char *argv[]) {
+	adc_do_sample();
+}
+
 static void proc_line(char *s) {
 	static const char sep[] = " \t";
 	char *tok[2] = {};
@@ -95,6 +125,10 @@ static void proc_line(char *s) {
 			cmd_help(tok_sz, tok);
 		} else if (strcmp(tok[0], "voltage") == 0 || strcmp(tok[0], "v") == 0) {
 			cmd_v(tok_sz, tok);
+		} else if (strcmp(tok[0], "dac") == 0 || strcmp(tok[0], "d") == 0) {
+			cmd_d(tok_sz, tok);
+		} else if (strcmp(tok[0], "adc") == 0 || strcmp(tok[0], "a") == 0) {
+			cmd_a(tok_sz, tok);
 		} else {
 			printk("Unknown command '%s', try help\n", tok[0]);
 		}

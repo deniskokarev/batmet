@@ -12,10 +12,35 @@
 #define DT_SPEC_AND_COMMA(node_id, prop, idx) \
     ADC_DT_SPEC_GET_BY_IDX(node_id, idx),
 
+#define NCHAN   DT_PROP_LEN(DT_PATH(zephyr_user), io_channels)
+
 /* Data of ADC io-channels specified in devicetree. */
 static const struct adc_dt_spec adc_channels[] = {
 		DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), io_channels,
 		                     DT_SPEC_AND_COMMA)
+};
+
+static int16_t buf[NCHAN];
+
+static struct adc_sequence sequence[NCHAN] = {
+		{
+				.buffer = &buf[0],
+				.buffer_size = sizeof(buf[0]),
+		},
+		{
+				.buffer = &buf[1],
+				.buffer_size = sizeof(buf[1]),
+		},
+		{
+				.buffer = &buf[2],
+				.buffer_size = sizeof(buf[2]),
+		},
+};
+
+static const char *adc_chan_name[NCHAN] = {
+		"EXT",
+		"LOAD",
+		"CUR"
 };
 
 int adc_init() {
@@ -32,31 +57,29 @@ int adc_init() {
 			LOG_ERR("Could not setup channel #%d (%d)", i, rc);
 			return -EINVAL;
 		}
+		rc = adc_sequence_init_dt(&adc_channels[i], &sequence[i]);
+		if (rc < 0) {
+			LOG_ERR("Could not setup channel #%d sequence (%d)", i, rc);
+			return -EINVAL;
+		}
 	}
 	return 0;
 }
 
 void adc_do_sample() {
-	int16_t buf;
-	struct adc_sequence sequence = {
-			.buffer = &buf,
-			/* buffer size in bytes, not number of samples */
-			.buffer_size = sizeof(buf),
-	};
-	LOG_DBG("ADC reading:");
 	for (size_t i = 0U; i < ARRAY_SIZE(adc_channels); i++) {
-		(void) adc_sequence_init_dt(&adc_channels[i], &sequence);
-		int err = adc_read(adc_channels[i].dev, &sequence);
+		int err = adc_read(adc_channels[i].dev, &sequence[i]);
 		if (err < 0) {
 			LOG_ERR("- %s, channel %d: error: %d ",
 			        adc_channels[i].dev->name,
 			        adc_channels[i].channel_id,
 			        err);
 		} else {
-			LOG_DBG("- %s, channel %d: %"PRId16,
-			        adc_channels[i].dev->name,
-			        adc_channels[i].channel_id,
-			        buf);
+			printk("- %s, channel %d (%s): %"PRId16"\n",
+			       adc_channels[i].dev->name,
+			       adc_channels[i].channel_id,
+			       adc_chan_name[i],
+			       buf[i]);
 		}
 	}
 }
