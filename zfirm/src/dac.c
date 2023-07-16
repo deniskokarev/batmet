@@ -1,6 +1,10 @@
 #include <zephyr/kernel.h>
 #include <zephyr/drivers/dac.h>
+#include <zephyr/settings/settings.h>
 #include "main.h"
+
+// increment each time CALIBRATE struct changes
+#define CALIBRATION_VER 1
 
 #define ZEPHYR_USER_NODE DT_PATH(zephyr_user)
 
@@ -24,46 +28,80 @@ static const struct dac_channel_cfg dac_ch_cfg = {
 		.resolution  = DAC_RESOLUTION
 };
 
-int run_dac_cycle = 0;
+const char *dac_err_str(dac_err_t err) {
+	static const char *dac_err[DAC_ERR_SZ] = {
+			[DAC_OK] = "Success",
+			[DAC_ERR_RANGE] = "Out of range",
+			[DAC_ERR_LOW] = "Too low",
+			[DAC_ERR_HIGH] = "Too high",
+			[DAC_ERR_WRITE] = "DAC Write Error",
+			[DAC_ERR_NO_CALIB] = "Not calibrated",
+			[DAC_ERR_SAVE_CALIBRATION] = "Cannot save calibration",
+	};
 
-void dac_do_run_cycle(int *dac_phase) {
-	const int dac_range = 1U << DAC_RESOLUTION;
-	int d = *dac_phase ? +1 : -1;
-	int i = *dac_phase ? 0 : (dac_range - 1);
-	do {
-		int rc = dac_write_value(dac_dev, DAC_CHANNEL_ID, i);
-		if (rc != 0) {
-			LOG_ERR("dac_write_value() failed with code %d", rc);
-		}
-		i += d;
-		i %= dac_range;
-		k_sleep(K_MSEC(1));
-	} while (i != 0);
-	*dac_phase = !*dac_phase;
+	return dac_err[err];
 }
 
-int dac_do_init() {
+dac_err_t dac_do_init() {
 	if (!device_is_ready(dac_dev)) {
 		LOG_ERR("DAC device %s is not ready", dac_dev->name);
-		return -3;
+		return DAC_ERR_DEVICE_NOT_READY;
 	}
 
 	int rc = dac_channel_setup(dac_dev, &dac_ch_cfg);
 	if (rc != 0) {
 		LOG_ERR("Setting up of DAC channel failed with code %d", rc);
-		return -4;
+		return DAC_ERR_CHANNEL_SETUP;
 	}
-	return 0;
+	return DAC_OK;
 }
 
-static const float v2dac_min_v = 0;
-static const float v2dac_max_v = 1.55;
-static const float v2dac_a = -1.9936000146392046;
-static const float v2dac_b = 2375.2877887895047;
-static const float v2dac_c = 244.66981905981123;
+typedef struct {
+	int ver; // should be 1st
+	float min;
+	float max;
+	float a;
+	float b;
+	float c;
+} CALIBRATE;
 
-const char *dac_err_str(dac_err_t err) {
-	return "unsupported voltage range";
+static CALIBRATE cal_dac;
+
+int cal_handle_set(const char *name, size_t len, settings_read_cb read_cb, void *cb_arg) {
+	ARG_UNUSED(len);
+	const char *next;
+	size_t name_len = settings_name_next(name, &next);
+	if (!next && !strncmp(name, "dac", name_len)) {
+		return read_cb(cb_arg, &cal_dac, sizeof(cal_dac)) != sizeof(cal_dac); // 0 means success
+	} else {
+		return -ENOENT;
+	}
+}
+
+SETTINGS_STATIC_HANDLER_DEFINE(batmet_dac, "cal",
+                               NULL,
+                               cal_handle_set,
+                               NULL,
+                               NULL
+);
+
+dac_err_t dac_set_calibration(float mn, float mx, float a, float b, float c) {
+	cal_dac = (CALIBRATE) {
+			.ver = CALIBRATION_VER,
+			.min = mn,
+			.max = mx,
+			.a = a,
+			.b = b,
+			.c = c
+	};
+	int rc = settings_save_one("cal/dac", &cal_dac, sizeof(cal_dac));
+	if (rc < 0) {
+		LOG_ERR("settings_save_one() error %d", rc);
+		return DAC_ERR_SAVE_CALIBRATION;
+	} else {
+		LOG_INF("cal dac saved: ver=%d, min=%f, max=%f, a=%f, b=%f, c=%f", CALIBRATION_VER, mn, mx, a, b, c);
+		return DAC_OK;
+	}
 }
 
 /**
@@ -71,42 +109,44 @@ const char *dac_err_str(dac_err_t err) {
  * @param v voltage
  * @return 0 if no error
  */
-static int v2dac(int *dac, float v) {
-	if (v < v2dac_min_v) {
+static dac_err_t v2dac(int *dac, float v) {
+	if (cal_dac.ver < CALIBRATION_VER) {
+		return DAC_ERR_NO_CALIB;
+	}
+	if (v < cal_dac.min) {
 		return DAC_ERR_LOW;
-	} else if (v > v2dac_max_v) {
+	} else if (v > cal_dac.max) {
 		return DAC_ERR_HIGH;
 	} else {
-		float d = v2dac_a * v * v + v2dac_b * v + v2dac_c;
+		float d = cal_dac.a * v * v + cal_dac.b * v + cal_dac.c;
 		*dac = (int) (d + 0.5);
 		return DAC_OK;
 	}
 }
 
-int dac_set_v(float v) {
+dac_err_t dac_set_v(float v) {
 	int d;
 	int rc = v2dac(&d, v);
 	if (rc != DAC_OK) {
-		LOG_ERR("wrong voltage, error %s", dac_err_str(rc));
 		return rc;
 	}
 	rc = dac_write_value(dac_dev, DAC_CHANNEL_ID, d);
 	if (rc != 0) {
 		LOG_ERR("dac_write_value() failed with code %d", rc);
-		return rc;
+		return DAC_ERR_WRITE;
 	}
-	return rc;
+	return DAC_OK;
 }
 
-int dac_set_d(int d) {
+dac_err_t dac_set_d(int d) {
 	if (d < 0 || d > 4095) {
-		LOG_ERR("wrong voltage, supported [0..4095]");
+		LOG_ERR("supported DAC values [0..4095]");
 		return DAC_ERR_RANGE;
 	}
 	int rc = dac_write_value(dac_dev, DAC_CHANNEL_ID, d);
 	if (rc != 0) {
 		LOG_ERR("dac_write_value() failed with code %d", rc);
-		return rc;
+		return DAC_ERR_WRITE;
 	}
-	return rc;
+	return DAC_OK;
 }

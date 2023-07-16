@@ -27,24 +27,28 @@ int adc_init();
 
 void adc_do_sample();
 
-extern int run_dac_cycle;
-
-void dac_do_run_cycle(int *dac_phase);
-
-int dac_do_init();
-
-int dac_set_d(int d);
-
-int dac_set_v(float v);
-
 typedef enum {
 	DAC_OK = 0,
+	DAC_ERR_DEVICE_NOT_READY,
+	DAC_ERR_CHANNEL_SETUP,
 	DAC_ERR_RANGE,
 	DAC_ERR_LOW,
 	DAC_ERR_HIGH,
+	DAC_ERR_WRITE,
+	DAC_ERR_NO_CALIB,
+	DAC_ERR_SAVE_CALIBRATION,
+	DAC_ERR_SZ,
 } dac_err_t;
 
 const char *dac_err_str(dac_err_t err);
+
+dac_err_t dac_do_init();
+
+dac_err_t dac_set_d(int d);
+
+dac_err_t dac_set_v(float v);
+
+dac_err_t dac_set_calibration(float mn, float mx, float a, float b, float c);
 
 /************** LED ***************/
 
@@ -83,5 +87,10 @@ void led_set(led_t led, uint8_t duty);
  * @param hz frequency in Hz, e.g: 1.0/3 means every 3 seconds
  */
 void led_flow(led_t led, float freq);
+
+/**
+ * Process one input command
+ */
+void cmd_proc();
 
 #endif //BATMET_MAIN_H
