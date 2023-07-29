@@ -68,7 +68,7 @@ class Mult:
 
     @staticmethod
     def close_serial(ser: serial.SerialBase) -> None:
-        print(f"err={Mult.get_err(ser)}")
+        # print(f"err={Mult.get_err(ser)}")
         ser.write(b"SYSTEM:LOCAL\r\n")
         ser.write(b"*CLS\r\n")
         ser.flush()
@@ -88,6 +88,12 @@ class Mult:
     def dc_voltage(self) -> float:
         self.ser.write(b":MEAS:VOLT:DC?\r\n")
         return self._read_float()
+
+    def display(self, msg) -> float:
+        """
+        change the Mult display message
+        """
+        self.ser.write(f'DISPLAY:TEXT "{msg}"\r\n'.encode())
 
 
 def demo() -> int:

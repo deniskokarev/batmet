@@ -22,7 +22,7 @@ class Batmet:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        Batmet.close_serial(self.ser)
+        self.close_serial()
 
     @classmethod
     def open_serial(cls, port: Optional[str] = None) -> serial.SerialBase:
@@ -42,8 +42,8 @@ class Batmet:
             ser.write(b"help\r\n")
             ser.flush()
             for _ in range(2):
-                l = ser.read_until().decode("ascii").rstrip()
-                if re.search("Supported commands", l):
+                lout = ser.read_until().decode("ascii").rstrip()
+                if re.search("Supported commands", lout):
                     break
             else:
                 raise Exception(f"There is no BatMet device on port {port}")
@@ -53,9 +53,9 @@ class Batmet:
             ser.close()
             raise e
 
-    @staticmethod
-    def close_serial(ser: serial.SerialBase) -> None:
-        ser.close()
+    def close_serial(self) -> None:
+        self.set_d(0)
+        self.ser.close()
 
     def set_d(self, d: int) -> None:
         self.ser.write(f"d {d}\r\n".encode())
