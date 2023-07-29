@@ -95,7 +95,6 @@ def demo() -> int:
         with Mult() as mult:
             for i in range(3):
                 print(f"I={mult.dc_current()}")
-                time.sleep(1)
         return 0
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
