@@ -46,7 +46,7 @@ dac_err_t dac_do_init();
 
 dac_err_t dac_set_d(int d);
 
-dac_err_t dac_set_v(float v);
+dac_err_t dac_set_current(float v);
 
 dac_err_t dac_set_calibration(float mn, float mx, float a, float b, float c);
 

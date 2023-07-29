@@ -45,30 +45,31 @@ int my_strtof(float *res, const char *str) {
 
 static void cmd_help(int argc, char **argv) {
 	printk("Supported commands:\n"
-	       "\tv <voltage> - set desired output voltage\n"
+	       "\tsink <amperes> - set desired current sink\n"
 	       "\td <dac_value> - set dac output value [0..4095]\n"
-	       "\ta - sample ADC channels\n"
+	       "\ta - sample all ADC channels\n"
+	       "\tcsink <min> <max> <a> <b> <c> - store current sink calibration coefficients from cal_i2d.py computation\n"
 	);
 }
 
-static void cmd_v(int argc, char *argv[]) {
+static void cmd_sink(int argc, char *argv[]) {
 	if (argc < 2) {
-		printk("expecting only one argument - voltage\n");
+		printk("expecting only one argument - current\n");
 	}
-	float v;
-	int rc = my_strtof(&v, argv[1]);
-	if (rc || v < 0) {
-		printk("the voltage must be positive number\n");
+	float a;
+	int rc = my_strtof(&a, argv[1]);
+	if (rc || a < 0) {
+		printk("the current must be positive number\n");
 	} else {
-		rc = dac_set_v(v);
+		rc = dac_set_current(a);
 		if (rc) {
-			printk("could not set voltage with error: %s\n", dac_err_str(rc));
+			printk("could not set sink current with error: %s\n", dac_err_str(rc));
 		} else {
-			if (v > 0) {
-				printk("voltage = %f\n", v);
+			if (a > 0) {
+				printk("sinking = %f A\n", a);
 				led_flow(LED_GREEN, LED_FLOW_NORMAL);
 			} else {
-				printk("voltage = off\n");
+				printk("sink = off\n");
 				led_set(LED_GREEN, LED_ON);
 			}
 		}
@@ -103,22 +104,22 @@ static void cmd_a(int argc, char *argv[]) {
 	adc_do_sample();
 }
 
-static void cmd_caldac(int argc, char *argv[]) {
+static void cmd_csink(int argc, char *argv[]) {
 	if (argc != 6) {
-		printk("expecting 5 args: caldac <min> <max> <a> <b> <c>\n");
+		printk("expecting 5 args: cals <min> <max> <a> <b> <c>\n");
 		return;
 	}
 	float f[5];
 	for (int i = 1; i < 6; i++) {
 		int rc = my_strtof(&f[i - 1], argv[i]);
 		if (rc) {
-			printk("%d-th argument to caldac must be a floating number, got %s instead\n", i, argv[i]);
+			printk("%d-th argument to csink must be a floating number, got %s instead\n", i, argv[i]);
 			return;
 		}
 	}
 	dac_err_t rc = dac_set_calibration(f[0], f[1], f[2], f[3], f[4]);
 	if (rc) {
-		printk("caldac failed with %s\n", dac_err_str(rc));
+		printk("csink failed with %s\n", dac_err_str(rc));
 	}
 }
 
@@ -137,14 +138,14 @@ static void proc_line(char *s) {
 	if (tok_sz > 0) {
 		if (strcmp(tok[0], "help") == 0 || strcmp(tok[0], "h") == 0 || strcmp(tok[0], "?") == 0) {
 			cmd_help(tok_sz, tok);
-		} else if (strcmp(tok[0], "voltage") == 0 || strcmp(tok[0], "v") == 0) {
-			cmd_v(tok_sz, tok);
-		} else if (strcmp(tok[0], "dac") == 0 || strcmp(tok[0], "d") == 0) {
+		} else if (strcmp(tok[0], "s") == 0 || strcmp(tok[0], "sink") == 0) {
+			cmd_sink(tok_sz, tok);
+		} else if (strcmp(tok[0], "d") == 0 || strcmp(tok[0], "dac") == 0) {
 			cmd_d(tok_sz, tok);
-		} else if (strcmp(tok[0], "adc") == 0 || strcmp(tok[0], "a") == 0) {
+		} else if (strcmp(tok[0], "a") == 0 || strcmp(tok[0], "adc") == 0) {
 			cmd_a(tok_sz, tok);
-		} else if (strcmp(tok[0], "caldac") == 0 || strcmp(tok[0], "cdac") || strcmp(tok[0], "cd") == 0) {
-			cmd_caldac(tok_sz, tok);
+		} else if (strcmp(tok[0], "cs") == 0 || strcmp(tok[0], "csink") == 0) {
+			cmd_csink(tok_sz, tok);
 		} else {
 			printk("Unknown command '%s', try help\n", tok[0]);
 		}

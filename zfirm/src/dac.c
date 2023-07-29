@@ -105,28 +105,28 @@ dac_err_t dac_set_calibration(float mn, float mx, float a, float b, float c) {
 }
 
 /**
- * @param dac - value for the given voltage
- * @param v voltage
+ * @param dac - value for the given current
+ * @param amp - current
  * @return 0 if no error
  */
-static dac_err_t v2dac(int *dac, float v) {
+static dac_err_t curr2dac(int *dac, float amp) {
 	if (cal_dac.ver < CALIBRATION_VER) {
 		return DAC_ERR_NO_CALIB;
 	}
-	if (v < cal_dac.min) {
+	if (amp < cal_dac.min) {
 		return DAC_ERR_LOW;
-	} else if (v > cal_dac.max) {
+	} else if (amp > cal_dac.max) {
 		return DAC_ERR_HIGH;
 	} else {
-		float d = cal_dac.a * v * v + cal_dac.b * v + cal_dac.c;
+		float d = cal_dac.a * amp * amp + cal_dac.b * amp + cal_dac.c;
 		*dac = (int) (d + 0.5);
 		return DAC_OK;
 	}
 }
 
-dac_err_t dac_set_v(float v) {
+dac_err_t dac_set_current(float amp) {
 	int d;
-	int rc = v2dac(&d, v);
+	int rc = curr2dac(&d, amp);
 	if (rc != DAC_OK) {
 		return rc;
 	}
