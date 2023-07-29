@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import sys
 import re
 import time
@@ -53,7 +54,7 @@ class Mult:
             ser.write(b"SYSTEM:REMOTE\r\n")
             ser.write(b'DISPLAY:TEXT "EXEC..."\r\n')
             ser.flush()
-            time.sleep(.3)
+            time.sleep(.5)
             return ser
         except Exception as e:
             ser.close()
