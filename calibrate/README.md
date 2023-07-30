@@ -34,7 +34,19 @@ The first column is DAC value, second column is measured Current.
 
 Run it like so:
 ```
-./collect.py | tee calibration_d_i.txt
+% ./collect.py | tee calibration_d_i.txt
+450	5.1925633333333336e-05
+...
+630	0.14030770666666667
+640	0.15371349666666667
+650	0.16676064
+660	0.17984219
+670	0.19308439666666669
+...
+2790	2.9714523666666666
+2800	2.9835309666666667
+2810	2.9965467666666665
+2820	3.0102106
 ```
 
 The collection script has rudimentary fault-tolerance and will properly shutdown the current sink upon
