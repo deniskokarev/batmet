@@ -5,7 +5,6 @@ import time
 from typing import Optional
 
 import serial.tools.list_ports
-from serial import PARITY_NONE
 
 
 class Batmet:
@@ -36,7 +35,6 @@ class Batmet:
         ser = serial.Serial(port=port.device,
                             baudrate=115200,
                             timeout=2.0,
-                            parity=PARITY_NONE,
                             )
         try:
             ser.write(b"help\r\n")
@@ -66,7 +64,7 @@ class Batmet:
 def demo() -> int:
     try:
         with Batmet() as bm:
-            for d in [100, 200, 300, 0]:
+            for d in [400, 500, 600, 0]:
                 print(f"setting d={d}", file=sys.stderr)
                 bm.set_d(d)
                 time.sleep(5)

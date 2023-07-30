@@ -15,7 +15,7 @@ def collect(mult: Mult, bm: Batmet) -> None:
     """
     for d in range(450, 4100, 10):
         bm.set_d(d)
-        mult.display(f"D={d}")
+        mult.display(f"DAC-{d}")
         # reading each measurement few times
         cnt = 3
         vs = 0.0

@@ -5,16 +5,15 @@ import time
 from typing import Optional
 
 import serial.tools.list_ports
-from serial import PARITY_NONE
 
 
 class Mult:
     """
-    open Agilent 34401A multimeter
+    Agilent 34401A multimeter
     using:
     - null-modem cable: https://www.amazon.com/dp/B00006B8BJ
     - Prolific PL2303 Chip, DB9 Adapter: https://www.amazon.com/dp/B00GRP8EZU
-    Make sure to set the RS232 interface with 9600 baud 8n1 mode
+    Make sure to configure Multimeter to use RS232 interface with 9600 baud 8n1 mode
     """
     PID = 0x2303
     VID = 0x067b
@@ -41,8 +40,6 @@ class Mult:
         ser = serial.Serial(port=port.device,
                             baudrate=9600,
                             timeout=2.0,
-                            parity=PARITY_NONE,
-                            stopbits=2,
                             )
         try:
             ser.write(b"*IDN?\r\n")
@@ -89,7 +86,7 @@ class Mult:
         self.ser.write(b":MEAS:VOLT:DC?\r\n")
         return self._read_float()
 
-    def display(self, msg) -> float:
+    def display(self, msg) -> None:
         """
         change the Mult display message
         """
