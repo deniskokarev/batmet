@@ -24,7 +24,7 @@ def prn_hack(SCOPEID: str) -> None:
     bwopt = (
         '25M', '40M', '50M', '60M', '70M', '100M', '150M', '200M', '250M', '300M', '350M', '500M', '750M', '1000M',
         'MAX',
-        'AWG', 'WIFI', 'MSO', 'FLX', 'CFD', 'I2S', '1553', 'PWA')
+        'AWG', 'WIFI', 'MSO', 'FLX', 'CFD', 'I2S', '1553', 'PWA', 'SENT', 'MANC')
 
     hashkey = '5zao9lyua01pp7hjzm3orcq90mds63z6zi5kv7vmv3ih981vlwn06txnjdtas3u2wa8msx61i12ueh14t7kqwsfskg032nhyuy1d9vv2wm925rd18kih9xhkyilobbgy'
 
